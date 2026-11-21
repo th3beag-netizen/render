@@ -31,6 +31,17 @@ jobs:
           assert m["license"] == "GPL-3.0"
           print("Identity and license checks passed")
           PY
+      - name: Apply Peegi-style GUI, menu controls and HUD
+        run: |
+          base64 --decode peegi-ui.patch.xz.b64 > /tmp/peegi-ui.patch.xz
+          echo 'c9a3177a3f4222473ab2d9285382666ff31a105d44b3b58cb807ed4c12d628d0  /tmp/peegi-ui.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-ui.patch.xz > /tmp/peegi-ui.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-ui.patch)
+          mkdir -p meteor-upstream/src/main/resources/assets/meteor-client/textures/gui
+          base64 --decode peegi-hud-logo.png.b64 > meteor-upstream/src/main/resources/assets/meteor-client/textures/gui/beegi_peegi_logo.png
+          echo '492357888acf952643e512df2cadc679ce59f0be7e0be21e56fb103a3d4e2af2  meteor-upstream/src/main/resources/assets/meteor-client/textures/gui/beegi_peegi_logo.png' | sha256sum --check
+          grep -q 'register(PeegiLogoHud.INFO)' meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/Hud.java
+          grep -q 'add(new MeteorGuiTheme("Peegi"))' meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/GuiThemes.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
