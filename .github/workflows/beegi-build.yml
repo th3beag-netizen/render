@@ -81,6 +81,16 @@ jobs:
           grep -q 'BeegiOptions.load' src/client/java/com/beegi/client/BeegiClient.java
           grep -q 'BeegiOptions.opacity' src/client/java/com/beegi/client/modules/BeegiAddons.java
           grep -q 'class BeegiMenuScreen' src/client/java/com/beegi/client/gui/BeegiMenuScreen.java
+      - name: Apply real Peegi-style floating windows and inline settings
+        run: |
+          cat beegi-phase1/part{0,1,2,3}.b64 | base64 --decode > /tmp/beegi-phase1.tar.xz
+          echo '030b45b563717246388fed7b788312572189d538f83383bb7bc341875d6464ca  /tmp/beegi-phase1.tar.xz' | sha256sum -c -
+          tar -xJf /tmp/beegi-phase1.tar.xz
+      - name: Test floating layout and geometry
+        run: |
+          mkdir -p /tmp/beegi-layout-tests
+          javac -d /tmp/beegi-layout-tests src/client/java/com/beegi/client/core/FloatingLayout.java tests/FloatingLayoutTest.java
+          java -cp /tmp/beegi-layout-tests FloatingLayoutTest
       - name: Compile with Minecraft 26.3
         run: gradle --no-daemon clean build --stacktrace
       - name: Upload compiled JAR
