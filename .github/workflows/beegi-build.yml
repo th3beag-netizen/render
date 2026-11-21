@@ -70,6 +70,17 @@ jobs:
           s=p.read_text().replace("int x = center - 164;", "int x = center - (ModuleCatalog.Category.values().length * 82) / 2;")
           p.write_text(s)
           PY
+      - name: Apply Peegi-inspired interface and Xray options
+        run: |
+          cat beegi-polish/part{0,1,2,3}.b64 | base64 --decode > /tmp/beegi-polish.tar.xz
+          echo "1c5368f4047fcaa97ec9db3f2bf4d4c705279b1e38110263ac6c1422c74cac89  /tmp/beegi-polish.tar.xz" | sha256sum --check
+          tar -xJf /tmp/beegi-polish.tar.xz
+      - name: Check enhanced module settings
+        run: |
+          grep -q '"xray"' src/client/java/com/beegi/client/core/ModuleCatalog.java
+          grep -q 'BeegiOptions.load' src/client/java/com/beegi/client/BeegiClient.java
+          grep -q 'BeegiOptions.opacity' src/client/java/com/beegi/client/modules/BeegiAddons.java
+          grep -q 'class BeegiMenuScreen' src/client/java/com/beegi/client/gui/BeegiMenuScreen.java
       - name: Compile with Minecraft 26.3
         run: gradle --no-daemon clean build --stacktrace
       - name: Upload compiled JAR
