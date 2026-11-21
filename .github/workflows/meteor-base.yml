@@ -1,0 +1,61 @@
+name: Beegi 26.3 — Meteor source foundation
+on:
+  push:
+    branches: [beegi-meteor-base]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clone pinned upstream Meteor 26.3 source
+        run: |
+          git clone https://github.com/MeteorDevelopment/meteor-client.git meteor-upstream
+          git -C meteor-upstream checkout --detach ec8cdb088af88582bade7cd3b0dfbe71ccd2285c
+          test -f meteor-upstream/LICENSE
+          grep -q 'minecraft = "26.3"' meteor-upstream/gradle/libs.versions.toml
+      - name: Apply Beegi source patch
+        run: |
+          python3 patch_meteor.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m = json.loads(Path("meteor-upstream/src/main/resources/fabric.mod.json").read_text())
+          assert m["name"] == "Beegi (Meteor-based)"
+          assert m["id"] == "meteor-client"
+          assert m["license"] == "GPL-3.0"
+          print("Identity and license checks passed")
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Compile Meteor-derived Beegi on Minecraft 26.3
+        working-directory: meteor-upstream
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon clean build --stacktrace
+      - name: Upload Beegi mod JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beegi-meteor-26.3-jars
+          path: meteor-upstream/build/libs/*.jar
+          if-no-files-found: error
+      - name: Package corresponding GPL source
+        if: success()
+        run: |
+          tar -czf beegi-meteor-26.3-complete-source.tar.gz --exclude=.git -C meteor-upstream .
+      - name: Upload full modified source
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beegi-meteor-26.3-source-gpl
+          path: beegi-meteor-26.3-complete-source.tar.gz
+          if-no-files-found: error
