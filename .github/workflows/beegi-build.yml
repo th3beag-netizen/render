@@ -1,0 +1,33 @@
+name: Build Beegi 26.3 source snapshot
+on:
+  push:
+    branches: [beegi-26.3]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract Beegi source
+        run: tar -xJf beegi-source.tar.xz
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.7.1'
+      - name: Source and logic regression tests
+        run: bash ./test-core.sh
+      - name: Compile with Minecraft 26.3
+        run: gradle --no-daemon clean build --stacktrace
+      - name: Upload compiled JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beegi-26.3-jar
+          path: build/libs/*.jar
+          if-no-files-found: error
