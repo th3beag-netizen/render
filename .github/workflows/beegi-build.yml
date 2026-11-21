@@ -91,6 +91,17 @@ jobs:
           mkdir -p /tmp/beegi-layout-tests
           javac -d /tmp/beegi-layout-tests src/client/java/com/beegi/client/core/FloatingLayout.java tests/FloatingLayoutTest.java
           java -cp /tmp/beegi-layout-tests FloatingLayoutTest
+      - name: Apply Phase 2 Xray rendering and 3D ESP
+        run: |
+          echo 'b197bd1f4771332d6b33ffd5824dfd6babf3699394b2fe6edc7e75142e409702  beegi-phase2-overlay.tar.xz' | sha256sum -c -
+          tar -xJf beegi-phase2-overlay.tar.xz
+      - name: Test 3D ESP projection and Xray source registration
+        run: |
+          mkdir -p /tmp/beegi-projection-tests
+          javac -d /tmp/beegi-projection-tests src/client/java/com/beegi/client/render/ProjectionMath.java tests/ProjectionMathTest.java
+          java -cp /tmp/beegi-projection-tests ProjectionMathTest
+          grep -q '"mixins"' src/main/resources/fabric.mod.json
+          grep -q 'RenderSectionRegionMixin' src/main/resources/beegi.mixins.json
       - name: Compile with Minecraft 26.3
         run: gradle --no-daemon clean build --stacktrace
       - name: Upload compiled JAR
