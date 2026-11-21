@@ -42,6 +42,14 @@ jobs:
           echo '492357888acf952643e512df2cadc679ce59f0be7e0be21e56fb103a3d4e2af2  meteor-upstream/src/main/resources/assets/meteor-client/textures/gui/beegi_peegi_logo.png' | sha256sum --check
           grep -q 'register(PeegiLogoHud.INFO)' meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/Hud.java
           grep -q 'add(new MeteorGuiTheme("Peegi"))' meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/GuiThemes.java
+      - name: Apply Peegi v2 visual overhaul
+        run: |
+          base64 --decode beegi-ui-v2.patch.xz.b64 > /tmp/beegi-ui-v2.patch.xz
+          echo 'da5460add3eec197e887e8ac23d926cde713ca6194d2286b2a5e225120ab5478  /tmp/beegi-ui-v2.patch.xz' | sha256sum --check
+          xz -dc /tmp/beegi-ui-v2.patch.xz > /tmp/beegi-ui-v2.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/beegi-ui-v2.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/themes/meteor/PeegiDraw.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiTextHud.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
