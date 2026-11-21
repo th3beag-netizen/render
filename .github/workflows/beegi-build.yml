@@ -38,6 +38,38 @@ jobs:
               raise SystemExit("Expected 26.3 swing API call not found; check source revision")
           p.write_text(code.replace(old, new))
           PY
+      - name: Integrate ESP, Block ESP, Storage ESP and Fly
+        run: |
+          mkdir -p src/client/java/com/beegi/client/modules
+          cp beegi-addons/BeegiAddons.java src/client/java/com/beegi/client/modules/BeegiAddons.java
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path("src/client/java/com/beegi/client/core/ModuleCatalog.java")
+          s=p.read_text()
+          s=s.replace("COMBAT, MOVEMENT, WORLD, CLIENT", "COMBAT, MOVEMENT, WORLD, VISUALS, CLIENT")
+          key='        add("combat-guard", "Combat Guard (on world join)", Category.CLIENT);'
+          assert key in s
+          s=s.replace(key, '''        add("fly", "Fly", Category.MOVEMENT);
+                  add("esp", "Player ESP", Category.VISUALS);
+                  add("block-esp", "Block ESP (ores)", Category.VISUALS);
+                  add("storage-esp", "Storage ESP", Category.VISUALS);
+          '''.replace("                  ","        ") + key)
+          p.write_text(s)
+
+          p=Path("src/client/java/com/beegi/client/BeegiClient.java")
+          s=p.read_text()
+          s=s.replace("import com.beegi.client.modules.BasicModules;",
+            "import com.beegi.client.modules.BasicModules;\nimport com.beegi.client.modules.BeegiAddons;")
+          s=s.replace("        CONFIG.load(CATALOG);", "        CONFIG.load(CATALOG);\n        BeegiAddons.registerHud();")
+          s=s.replace("            BasicModules.tick(client, CATALOG);",
+             "            BasicModules.tick(client, CATALOG);\n            BeegiAddons.tick(client, CATALOG);")
+          p.write_text(s)
+
+          p=Path("src/client/java/com/beegi/client/gui/BeegiMenuScreen.java")
+          s=p.read_text().replace("int x = center - 164;", "int x = center - (ModuleCatalog.Category.values().length * 82) / 2;")
+          p.write_text(s)
+          PY
       - name: Compile with Minecraft 26.3
         run: gradle --no-daemon clean build --stacktrace
       - name: Upload compiled JAR
