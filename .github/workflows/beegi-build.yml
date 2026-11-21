@@ -102,6 +102,16 @@ jobs:
           java -cp /tmp/beegi-projection-tests ProjectionMathTest
           grep -q '"mixins"' src/main/resources/fabric.mod.json
           grep -q 'RenderSectionRegionMixin' src/main/resources/beegi.mixins.json
+      - name: Apply Phase 3 native input controls and configurable modules
+        run: |
+          cat beegi-phase3/part{0,1,2,3,4,5,6}.b64 | base64 --decode > /tmp/beegi-phase3.tar.xz
+          echo '4e15c998842b0446cadccaa929f896578ff7f71defa4ae48c1434dcd261f825f  /tmp/beegi-phase3.tar.xz' | sha256sum -c -
+          tar -xJf /tmp/beegi-phase3.tar.xz
+      - name: Test module toggle and config persistence
+        run: |
+          mkdir -p /tmp/beegi-controls
+          javac -d /tmp/beegi-controls src/client/java/com/beegi/client/core/{ConfigStore,ModuleCatalog}.java tests/GuiControlsSmokeTest.java
+          java -cp /tmp/beegi-controls GuiControlsSmokeTest
       - name: Compile with Minecraft 26.3
         run: gradle --no-daemon clean build --stacktrace
       - name: Upload compiled JAR
