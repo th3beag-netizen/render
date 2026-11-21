@@ -12,6 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -105,10 +106,7 @@ public final class BeegiAddons {
     private static boolean isStorage(BlockState state) {
         Block b = state.getBlock();
         return b == Blocks.CHEST || b == Blocks.TRAPPED_CHEST || b == Blocks.BARREL
-                || b == Blocks.ENDER_CHEST || b == Blocks.SHULKER_BOX
-                || b == Blocks.WHITE_SHULKER_BOX || b == Blocks.BLACK_SHULKER_BOX
-                || b == Blocks.RED_SHULKER_BOX || b == Blocks.BLUE_SHULKER_BOX
-                || b == Blocks.GREEN_SHULKER_BOX || b == Blocks.PURPLE_SHULKER_BOX;
+                || b == Blocks.ENDER_CHEST || b instanceof ShulkerBoxBlock;
     }
 
     public static void drawHud(GuiGraphicsExtractor g, DeltaTracker delta) {
