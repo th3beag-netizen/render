@@ -195,6 +195,15 @@ jobs:
           (cd meteor-upstream && git apply --check /tmp/peegi-v17-original-first.patch && git apply /tmp/peegi-v17-original-first.patch)
           grep -q 'ORIGINAL_CATEGORIES' meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiRebornScreen.java
           grep -q 'drawFriends' meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiRebornScreen.java
+      - name: Apply Beegi V18 source-grounded original Peegi Basic and combat ports
+        run: |
+          base64 --decode peegi-v18-original-parity.patch.xz.b64 > /tmp/peegi-v18.patch.xz
+          echo 'f4097816ad0009d87002fa0b9ea7a482988a01e421d54f62d69b2a4a0b15c79d  /tmp/peegi-v18.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v18.patch.xz > /tmp/peegi-v18.patch
+          (cd meteor-upstream && git apply --check /tmp/peegi-v18.patch && git apply /tmp/peegi-v18.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiOriginalBasicGroups.java
+          test -f meteor-upstream/src/main/resources/assets/meteor-client/peegi-original-basic-groups.tsv
+          grep -q 'ClientboundSetEntityMotionPacket' meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/movement/PeegiJumpReset.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
