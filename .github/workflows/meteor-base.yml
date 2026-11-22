@@ -182,7 +182,7 @@ jobs:
       - name: Apply Beegi V16 native Peegi controls and panel interaction reconstruction
         run: |
           base64 --decode peegi-v16-controls.patch.xz.b64 > /tmp/peegi-v16-controls.patch.xz
-          echo 'a61725bb6eafd4bb187289b28b09df9aec4aab20d2bfbc93172724ba759d6785  /tmp/peegi-v16-controls.patch.xz' | sha256sum --check
+          echo 'c214b90412f57def4f4030cbb16894b0a5171591a3527fdd21b792dbdab86177  /tmp/peegi-v16-controls.patch.xz' | sha256sum --check
           xz -dc /tmp/peegi-v16-controls.patch.xz > /tmp/peegi-v16-controls.patch
           (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v16-controls.patch)
           grep -q 'drawSettingPopup' meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiRebornScreen.java
