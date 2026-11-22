@@ -135,6 +135,17 @@ jobs:
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/player/PeegiSupplyWatch.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiSessionHud.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiSupplyHud.java
+      - name: Apply Beegi V12 Explorer, waypoints, death recall and threat monitor
+        run: |
+          base64 --decode peegi-v12.patch.xz.b64 > /tmp/peegi-v12.patch.xz
+          echo '5a3b921cb4fced214633518981efc421d14a891230f67a7d03b447de90316278  /tmp/peegi-v12.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v12.patch.xz > /tmp/peegi-v12.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v12.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiExplorerScreen.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/player/PeegiWaypointCompass.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/player/PeegiDeathRecall.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiThreatWatch.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiWaypointHud.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
