@@ -125,6 +125,16 @@ jobs:
           sed -i '/import meteordevelopment.meteorclient.systems.modules.Modules;/a import meteordevelopment.meteorclient.utils.player.SwingMode;' "$target"
           sed -i 's/mc.player.swing(InteractionHand.MAIN_HAND);/SwingMode.Client.attackSwing(InteractionHand.MAIN_HAND);/' "$target"
           grep -q 'SwingMode.Client.attackSwing' "$target"
+      - name: Apply V11 motion, supply, combo and reliability update
+        run: |
+          base64 --decode peegi-v11.patch.xz.b64 > /tmp/peegi-v11.patch.xz
+          echo '816a476138431c2d4f1656b31e2edca84b77e968dbe89f9763c72f9b8a0cb9e5  /tmp/peegi-v11.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v11.patch.xz > /tmp/peegi-v11.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v11.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiVisualSpin.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/player/PeegiSupplyWatch.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiSessionHud.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiSupplyHud.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
