@@ -163,6 +163,9 @@ jobs:
           echo '0988a0c364ccbb47b64a637848e61d91d55800414b489262f217ad5a0de439f9  /tmp/peegi-v14.patch.xz' | sha256sum --check
           xz -dc /tmp/peegi-v14.patch.xz > /tmp/peegi-v14.patch
           (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v14.patch)
+          sed -i 's/import com.mojang.blaze3d.pipeline.RenderPipelines;/import net.minecraft.client.renderer.RenderPipelines;/' \
+            meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiRebornScreen.java \
+            meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiTitleScreen.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiRebornScreen.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiTitleScreen.java
           grep -q 'new meteordevelopment.meteorclient.gui.screens.PeegiRebornScreen' meteor-upstream/src/main/java/meteordevelopment/meteorclient/MeteorClient.java
