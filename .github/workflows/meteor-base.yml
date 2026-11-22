@@ -118,6 +118,13 @@ jobs:
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/combat/PeegiTriggerAssist.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/movement/PeegiJumpReset.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiCooldownHud.java
+      - name: Adapt V10 Trigger Assist swing call for Minecraft 26.3
+        run: |
+          target=meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/combat/PeegiTriggerAssist.java
+          grep -q 'mc.player.swing(InteractionHand.MAIN_HAND);' "$target"
+          sed -i '/import meteordevelopment.meteorclient.systems.modules.Modules;/a import meteordevelopment.meteorclient.utils.player.SwingMode;' "$target"
+          sed -i 's/mc.player.swing(InteractionHand.MAIN_HAND);/SwingMode.Client.attackSwing(InteractionHand.MAIN_HAND);/' "$target"
+          grep -q 'SwingMode.Client.attackSwing' "$target"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
