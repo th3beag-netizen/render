@@ -92,7 +92,7 @@ jobs:
       - name: Apply Beegi V8 original Peegi visual suite
         run: |
           base64 --decode peegi-v8.patch.xz.b64 > /tmp/peegi-v8.patch.xz
-          echo 'dda1c239b3fea2dce6047ed1093404c852adce7378be40cc19df8abf2e54903a  /tmp/peegi-v8.patch.xz' | sha256sum --check
+          echo 'af28cfbf71035de1e3f9e3c7d665a5e8d33c55f89dc750cb6893f0c3f0147676  /tmp/peegi-v8.patch.xz' | sha256sum --check
           xz -dc /tmp/peegi-v8.patch.xz > /tmp/peegi-v8.patch
           (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v8.patch)
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiHitEffects.java
