@@ -64,6 +64,14 @@ jobs:
           echo '4348a9d2a839050c445945e0efc92d036759e0eaafc65142a3ffcc6b7dab41c3  /tmp/peegi-v4.patch.xz' | sha256sum --check
           xz -dc /tmp/peegi-v4.patch.xz > /tmp/peegi-v4.patch
           (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v4.patch)
+      - name: Apply Peegi V5 Studio and local module snapshots
+        run: |
+          base64 --decode peegi-v5-studio.patch.xz.b64 > /tmp/peegi-v5-studio.patch.xz
+          echo 'c18d950ab29084e4e3c34ee602444a8483cb55cb5fe43fef2ea547e2fe533205  /tmp/peegi-v5-studio.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v5-studio.patch.xz > /tmp/peegi-v5-studio.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v5-studio.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiStudioScreen.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiSnapshots.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
