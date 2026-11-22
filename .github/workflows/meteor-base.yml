@@ -58,6 +58,12 @@ jobs:
           (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v3.patch)
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiHomeScreen.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiArrayHud.java
+      - name: Apply Beegi V4 layout and small-resolution fixes
+        run: |
+          base64 --decode peegi-v4.patch.xz.b64 > /tmp/peegi-v4.patch.xz
+          echo '4348a9d2a839050c445945e0efc92d036759e0eaafc65142a3ffcc6b7dab41c3  /tmp/peegi-v4.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v4.patch.xz > /tmp/peegi-v4.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v4.patch)
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
