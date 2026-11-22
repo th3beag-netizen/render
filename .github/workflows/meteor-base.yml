@@ -72,6 +72,14 @@ jobs:
           (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v5-studio.patch)
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiStudioScreen.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiSnapshots.java
+      - name: Apply Beegi V6 full profiles, combo display and Studio shortcuts
+        run: |
+          base64 --decode peegi-v6.patch.xz.b64 > /tmp/peegi-v6.patch.xz
+          echo 'a315524d6ff5bed9f0240ae455d318c4ca27562377dd2483e368798bf7db257b  /tmp/peegi-v6.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v6.patch.xz > /tmp/peegi-v6.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v6.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/combat/PeegiComboTracker.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiComboHud.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
