@@ -108,6 +108,16 @@ jobs:
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/player/PeegiGearWatch.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiProximityRadar.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiAlertsHud.java
+      - name: Apply Beegi V10 Combat Lab and controlled movement
+        run: |
+          base64 --decode peegi-v10.patch.xz.b64 > /tmp/peegi-v10.patch.xz
+          echo 'd6ce4586085044f50130d66dabbd7f6bcfc1a4f66efb685cc4dab724b2c238fd  /tmp/peegi-v10.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v10.patch.xz > /tmp/peegi-v10.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v10.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/gui/screens/PeegiCombatLabScreen.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/combat/PeegiTriggerAssist.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/movement/PeegiJumpReset.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiCooldownHud.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
