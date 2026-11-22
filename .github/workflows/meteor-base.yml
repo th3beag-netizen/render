@@ -98,6 +98,16 @@ jobs:
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiHitEffects.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiCrosshair.java
           test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiTargetCardHud.java
+      - name: Apply Beegi V9 protection, awareness and HUD suite
+        run: |
+          base64 --decode peegi-v9.patch.xz.b64 > /tmp/peegi-v9.patch.xz
+          echo 'bee6766d3fffe09800e2767ede9f1a7c3a1c83b03d207e14c4d60bb859282497  /tmp/peegi-v9.patch.xz' | sha256sum --check
+          xz -dc /tmp/peegi-v9.patch.xz > /tmp/peegi-v9.patch
+          (cd meteor-upstream && patch --batch --forward -p1 < /tmp/peegi-v9.patch)
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/combat/PeegiFriendGuard.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/player/PeegiGearWatch.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/modules/render/PeegiProximityRadar.java
+          test -f meteor-upstream/src/main/java/meteordevelopment/meteorclient/systems/hud/elements/PeegiAlertsHud.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
